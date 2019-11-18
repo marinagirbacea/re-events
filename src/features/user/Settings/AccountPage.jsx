@@ -1,34 +1,22 @@
-import React from "react";
-import {
-  Segment,
-  Header,
-  Form,
-  Divider,
-  Label,
-  Button,
-  Icon
-} from "semantic-ui-react";
-import { Field, reduxForm } from "redux-form";
-import {
-  combineValidators,
-  matchesField,
-  isRequired,
-  composeValidators
-} from "revalidate";
-import TextInput from "../../../app/common/form/TextInput";
+import React from 'react';
+import { Segment, Header, Form, Divider, Label, Button, Icon } from 'semantic-ui-react';
+import { Field, reduxForm } from 'redux-form';
+import {combineValidators, composeValidators, isRequired, matchesField} from 'revalidate'
+import TextInput from '../../../app/common/form/TextInput';
 
 const validate = combineValidators({
-  newPassword1: isRequired({ message: "Please enter a password" }),
+  newPassword1: isRequired({message: 'Please enter a password'}),
   newPassword2: composeValidators(
-    isRequired({ message: "Please confirm your new password" }),
-    matchesField("newPassword1")({ message: "Passwords do not match" })
+    isRequired({message: 'Please confirm your new password'}),
+    matchesField('newPassword1')({message: 'Passwords do not match'})
   )()
-});
+})
 
-const AccountPage = ({ error, invalid, submitting,handleSubmit,updatePassword }) => {
+const AccountPage = ({ error, invalid, submitting, handleSubmit, updatePassword, providerId }) => {
   return (
     <Segment>
       <Header dividing size="large" content="Account" />
+      {providerId && providerId === 'password' &&
       <div>
         <Header color="teal" sub content="Change password" />
         <p>Use this form to update your account settings</p>
@@ -59,15 +47,10 @@ const AccountPage = ({ error, invalid, submitting,handleSubmit,updatePassword })
             </Label>
           )}
           <Divider />
-          <Button
-            disabled={invalid || submitting}
-            size="large"
-            positive
-            content="Update Password"
-          />
+          <Button disabled={invalid || submitting} size="large" positive content="Update Password" />
         </Form>
-      </div>
-
+      </div>}
+      {providerId && providerId === 'facebook.com' &&
       <div>
         <Header color="teal" sub content="Facebook Account" />
         <p>Please visit Facebook to update your account settings</p>
@@ -75,8 +58,8 @@ const AccountPage = ({ error, invalid, submitting,handleSubmit,updatePassword })
           <Icon name="facebook" />
           Go to Facebook
         </Button>
-      </div>
-
+      </div>}
+      {providerId && providerId === 'google.com' &&
       <div>
         <Header color="teal" sub content="Google Account" />
         <p>Please visit Google to update your account settings</p>
@@ -84,9 +67,9 @@ const AccountPage = ({ error, invalid, submitting,handleSubmit,updatePassword })
           <Icon name="google plus" />
           Go to Google
         </Button>
-      </div>
+      </div>}
     </Segment>
   );
 };
 
-export default reduxForm({ form: "account", validate })(AccountPage);
+export default reduxForm({ form: 'account', validate })(AccountPage);
