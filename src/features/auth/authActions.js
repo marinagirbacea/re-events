@@ -1,4 +1,5 @@
-import { LOGIN_USER, SIGN_OUT_USER } from "./authConstants";
+import {SubmissionError} from 'redux-form'
+import {  SIGN_OUT_USER } from "./authConstants";
 import { closeModal } from "../modals/modalActions";
 import { async } from "q";
 
@@ -12,6 +13,9 @@ export const login = creds => {
       dispatch(closeModal());
     } catch (error) {
       console.log(error);
+      throw new SubmissionError({
+        _error:'Login failed'
+      })
     }
   };
 };
