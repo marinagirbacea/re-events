@@ -1,7 +1,6 @@
 import {SubmissionError} from 'redux-form'
 import {  SIGN_OUT_USER } from "./authConstants";
 import { closeModal } from "../modals/modalActions";
-import { async } from "q";
 
 export const login = creds => {
   return async (dispatch, getState, { getFirebase }) => {
@@ -14,7 +13,7 @@ export const login = creds => {
     } catch (error) {
       console.log(error);
       throw new SubmissionError({
-        _error:'Login failed'
+        _error:'Login failed '
       })
     }
   };
