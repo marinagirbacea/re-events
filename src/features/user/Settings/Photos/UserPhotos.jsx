@@ -1,14 +1,13 @@
 import React, { Fragment } from "react";
 import { Header, Card, Button, Image } from "semantic-ui-react";
 
-function UserPhotos({ photos, profile }) {
-let filteredPhotos;
-if(photos){
-    filteredPhotos=photos.filter(photo=>{
-        return photo.url!==profile.photoURL
-    })
-}
-
+function UserPhotos({ photos, profile, deletePhoto }) {
+  let filteredPhotos;
+  if (photos) {
+    filteredPhotos = photos.filter(photo => {
+      return photo.url !== profile.photoURL;
+    });
+  }
 
   return (
     <Fragment>
@@ -27,7 +26,12 @@ if(photos){
                 <Button basic color="green">
                   Main
                 </Button>
-                <Button basic icon="trash" color="red" />
+                <Button
+                  onClick={() => deletePhoto(photo)}
+                  basic
+                  icon="trash"
+                  color="red"
+                />
               </div>
             </Card>
           ))}

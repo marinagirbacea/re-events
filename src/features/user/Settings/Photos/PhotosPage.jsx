@@ -13,7 +13,7 @@ import {
 } from "semantic-ui-react";
 import DropzoneInput from "./DropzoneInput";
 import CropperInput from "./CropperInput";
-import { uploadProfileImage } from "../../userActions";
+import { uploadProfileImage, deletePhoto } from "../../userActions";
 import { toastr } from "react-redux-toastr";
 import UserPhotos from "./UserPhotos";
 
@@ -29,16 +29,17 @@ const query = ({ auth }) => {
 };
 
 const actions = {
-  uploadProfileImage
+  uploadProfileImage,
+  deletePhoto
 };
 
 const mapState = state => ({
   auth: state.firebase.auth,
   profile: state.firebase.profile,
-  photos:state.firestore.ordered.photos
+  photos: state.firestore.ordered.photos
 });
 
-const PhotosPage = ({ uploadProfileImage ,photos,profile}) => {
+const PhotosPage = ({ uploadProfileImage, photos, profile, deletePhoto }) => {
   const [files, setFiles] = useState([]);
   const [image, setImage] = useState(null);
 
@@ -61,6 +62,14 @@ const PhotosPage = ({ uploadProfileImage ,photos,profile}) => {
   const handleCancelCrop = () => {
     setFiles([]);
     setImage(null);
+  };
+
+  const handleDeletePhoto = async photo => {
+    try {
+      await deletePhoto(photo);
+    } catch (error) {
+      toastr.error("Oops", error.message);
+    }
   };
 
   return (
@@ -113,7 +122,11 @@ const PhotosPage = ({ uploadProfileImage ,photos,profile}) => {
       </Grid>
 
       <Divider />
-      <UserPhotos photos={photos} profile={profile}/>
+      <UserPhotos
+        photos={photos}
+        profile={profile}
+        deletePhoto={handleDeletePhoto}
+      />
     </Segment>
   );
 };
