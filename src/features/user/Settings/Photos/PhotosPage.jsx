@@ -1,5 +1,7 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, Fragment } from "react";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { firestoreConnet } from "react-redux-firebase";
 import {
   Image,
   Segment,
@@ -8,18 +10,31 @@ import {
   Grid,
   Button,
   Card
-} from 'semantic-ui-react';
-import DropzoneInput from './DropzoneInput';
-import CropperInput from './CropperInput';
-import {
-  uploadProfileImage
-} from '../../userActions';
-import { toastr } from 'react-redux-toastr';
+} from "semantic-ui-react";
+import DropzoneInput from "./DropzoneInput";
+import CropperInput from "./CropperInput";
+import { uploadProfileImage } from "../../userActions";
+import { toastr } from "react-redux-toastr";
+
+const query=({auth})=>{
+  return[
+    {
+      collection:'users',
+      doc: auth.uid,
+      subcollections:[{collection:'photos'}],
+      storeAs:'photos'
+    }
+  ]
+}
 
 const actions = {
   uploadProfileImage
 };
 
+const mapState=(state)=>({
+  auth:state.firebase.auth,
+  profile : state.firebase.profile
+})
 
 const PhotosPage = ({ uploadProfileImage }) => {
   const [files, setFiles] = useState([]);
@@ -33,11 +48,11 @@ const PhotosPage = ({ uploadProfileImage }) => {
 
   const handleUploadImage = async () => {
     try {
-      await uploadProfileImage(image,files[0].name)
+      await uploadProfileImage(image, files[0].name);
       handleCancelCrop();
-      toastr.success('Success', 'Photo has been uploaded');
+      toastr.success("Success", "Photo has been uploaded");
     } catch (error) {
-      toastr.error('Oops', 'Something went wrong');
+      toastr.error("Oops", "Something went wrong");
     }
   };
 
@@ -118,4 +133,4 @@ const PhotosPage = ({ uploadProfileImage }) => {
   );
 };
 
-export default connect(null, actions)(PhotosPage);
+export default compose(connect(mapState, actions), firestoreConnect(auth=>query(auth)))(PhotosPage);
