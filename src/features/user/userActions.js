@@ -5,7 +5,6 @@ import {
   asyncActionError
 } from "../async/asyncActions";
 import cuid from "cuid";
-import { async } from "q";
 
 export const updateProfile = user => async (
   dispatch,
@@ -16,13 +15,13 @@ export const updateProfile = user => async (
   const { isLoaded, isEmpty, ...updatedUser } = user;
   try {
     await firebase.updateProfile(updatedUser);
-    toastr.success("Success", "Your profile has been updated.");
+    toastr.success("Success", "Your profile has been updated");
   } catch (error) {
     console.log(error);
   }
 };
 
-export const updateProfileImage = (file, fileName) => async (
+export const uploadProfileImage = (file, fileName) => async (
   dispatch,
   getState,
   { getFirebase, getFirestore }
@@ -37,14 +36,13 @@ export const updateProfileImage = (file, fileName) => async (
   };
   try {
     dispatch(asyncActionStart());
-
-    //upload the file to firebase storage
-    let uploadedFile = await firebase.uploadedFile(path, file, null, options);
-    //get the url of the image
+    // upload the file to firebase storage
+    let uploadedFile = await firebase.uploadFile(path, file, null, options);
+    // get url of image
     let downloadURL = await uploadedFile.uploadTaskSnapshot.ref.getDownloadURL();
-    //get userdoc
+    // get userdoc
     let userDoc = await firestore.get(`users/${user.uid}`);
-    //check if user has photo, if not update profile
+    // check if user has photo, if not update profile
     if (!userDoc.data().photoURL) {
       await firebase.updateProfile({
         photoURL: downloadURL
@@ -53,8 +51,7 @@ export const updateProfileImage = (file, fileName) => async (
         photoURL: downloadURL
       });
     }
-
-    //add the image to firestore
+    // add the image to firestore
     await firestore.add(
       {
         collection: "users",
@@ -90,7 +87,7 @@ export const deletePhoto = photo => async (
     });
   } catch (error) {
     console.log(error);
-    throw new Error("Problem deleting new photo");
+    throw new Error("Problem deleting the photo");
   }
 };
 

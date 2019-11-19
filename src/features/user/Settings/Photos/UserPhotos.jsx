@@ -1,25 +1,24 @@
 import React, { Fragment } from "react";
-import { Header, Card, Button, Image } from "semantic-ui-react";
+import { Header, Card, Image, Button } from "semantic-ui-react";
 
-function UserPhotos({ photos, profile, deletePhoto, setMainPhoto }) {
+const UserPhotos = ({ photos, profile, deletePhoto, setMainPhoto }) => {
   let filteredPhotos;
   if (photos) {
     filteredPhotos = photos.filter(photo => {
       return photo.url !== profile.photoURL;
     });
   }
-
   return (
     <Fragment>
       <Header sub color="teal" content="All Photos" />
 
       <Card.Group itemsPerRow={5}>
         <Card>
-          <Image src={profile.photoURL || '/assets/user.png'} />
+          <Image src={profile.photoURL || "/assets/user.png"} />
           <Button positive>Main Photo</Button>
         </Card>
         {photos &&
-          photos.map(photo => (
+          filteredPhotos.map(photo => (
             <Card key={photo.id}>
               <Image src={photo.url} />
               <div className="ui two buttons">
@@ -38,6 +37,6 @@ function UserPhotos({ photos, profile, deletePhoto, setMainPhoto }) {
       </Card.Group>
     </Fragment>
   );
-}
+};
 
 export default UserPhotos;

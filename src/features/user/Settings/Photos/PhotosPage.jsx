@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { firestoreConnet } from "react-redux-firebase";
+import { firestoreConnect } from "react-redux-firebase";
 import {
   Image,
   Segment,
@@ -41,7 +41,7 @@ const mapState = state => ({
   auth: state.firebase.auth,
   profile: state.firebase.profile,
   photos: state.firestore.ordered.photos,
-  loading:state.async.loading
+  loading: state.async.loading
 });
 
 const PhotosPage = ({
@@ -53,13 +53,15 @@ const PhotosPage = ({
   loading
 }) => {
   const [files, setFiles] = useState([]);
+  const [cropResult, setCropResult] = useState("");
   const [image, setImage] = useState(null);
 
   useEffect(() => {
     return () => {
       files.forEach(file => URL.revokeObjectURL(file.preview));
+      URL.revokeObjectURL(cropResult);
     };
-  }, [files]);
+  }, [files, cropResult]);
 
   const handleUploadImage = async () => {
     try {
@@ -74,6 +76,7 @@ const PhotosPage = ({
   const handleCancelCrop = () => {
     setFiles([]);
     setImage(null);
+    setCropResult("");
   };
 
   const handleDeletePhoto = async photo => {
@@ -105,7 +108,11 @@ const PhotosPage = ({
         <Grid.Column width={4}>
           <Header sub color="teal" content="Step 2 - Resize image" />
           {files.length > 0 && (
-            <CropperInput setImage={setImage} imagePreview={files[0].preview} />
+            <CropperInput
+              imagePreview={files[0].preview}
+              setImage={setImage}
+              setCropResult={setCropResult}
+            />
           )}
         </Grid.Column>
         <Grid.Column width={1} />
@@ -113,28 +120,22 @@ const PhotosPage = ({
           <Header sub color="teal" content="Step 3 - Preview & Upload" />
           {files.length > 0 && (
             <Fragment>
-              <div
-                className="img-preview"
-                style={{
-                  minHeight: "200px",
-                  minWidth: "200px",
-                  overflow: "hidden"
-                }}
+              <Image
+                src={cropResult}
+                style={{ minHeight: "200px", minWidth: "200px" }}
               />
-
               <Button.Group>
                 <Button
-                loading={loading}
+                  loading={loading}
                   onClick={handleUploadImage}
                   style={{ width: "100px" }}
                   positive
                   icon="check"
                 />
                 <Button
-                loading={loading}
+                  disabled={loading}
                   onClick={handleCancelCrop}
                   style={{ width: "100px" }}
-                  positive
                   icon="close"
                 />
               </Button.Group>
