@@ -8,12 +8,15 @@ import {
   Header,
   Divider,
   Grid,
-  Button,
-  Card
+  Button
 } from "semantic-ui-react";
 import DropzoneInput from "./DropzoneInput";
 import CropperInput from "./CropperInput";
-import { uploadProfileImage, deletePhoto } from "../../userActions";
+import {
+  uploadProfileImage,
+  deletePhoto,
+  setMainPhoto
+} from "../../userActions";
 import { toastr } from "react-redux-toastr";
 import UserPhotos from "./UserPhotos";
 
@@ -30,7 +33,8 @@ const query = ({ auth }) => {
 
 const actions = {
   uploadProfileImage,
-  deletePhoto
+  deletePhoto,
+  setMainPhoto
 };
 
 const mapState = state => ({
@@ -39,7 +43,13 @@ const mapState = state => ({
   photos: state.firestore.ordered.photos
 });
 
-const PhotosPage = ({ uploadProfileImage, photos, profile, deletePhoto }) => {
+const PhotosPage = ({
+  uploadProfileImage,
+  photos,
+  profile,
+  deletePhoto,
+  setMainPhoto
+}) => {
   const [files, setFiles] = useState([]);
   const [image, setImage] = useState(null);
 
@@ -67,6 +77,14 @@ const PhotosPage = ({ uploadProfileImage, photos, profile, deletePhoto }) => {
   const handleDeletePhoto = async photo => {
     try {
       await deletePhoto(photo);
+    } catch (error) {
+      toastr.error("Oops", error.message);
+    }
+  };
+
+  const handleSetMainPhoto = async photo => {
+    try {
+      await setMainPhoto(photo);
     } catch (error) {
       toastr.error("Oops", error.message);
     }
@@ -126,6 +144,7 @@ const PhotosPage = ({ uploadProfileImage, photos, profile, deletePhoto }) => {
         photos={photos}
         profile={profile}
         deletePhoto={handleDeletePhoto}
+        setMainPhoto={handleSetMainPhoto}
       />
     </Segment>
   );
