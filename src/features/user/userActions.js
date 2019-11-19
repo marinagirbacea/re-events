@@ -4,6 +4,7 @@ import {
   asyncActionFinish,
   asyncActionError
 } from "../async/asyncActions";
+import cuid from "cuid";
 
 export const updateProfile = user => async (
   dispatch,
@@ -25,18 +26,19 @@ export const updateProfileImage = (file, fileName) => async (
   getState,
   { getFirebase, getFirestore }
 ) => {
+  const imageName = cuid();
   const firebase = getFirebase();
   const firestore = getFirestore();
   const user = firebase.auth().currentUser;
   const path = `${user.uid}/user_images`;
   const options = {
-    name: fileName
+    name: imageName
   };
   try {
     dispatch(asyncActionStart());
 
     //upload the file to firebase storage
-    let uploadedFile = await firebase.uploadedFile(path, file, null.options);
+    let uploadedFile = await firebase.uploadedFile(path, file, null, options);
     //get the url of the image
     let downloadURL = await uploadedFile.uploadTaskSnapshot.ref.getDownloadURL();
     //get userdoc
@@ -59,7 +61,7 @@ export const updateProfileImage = (file, fileName) => async (
         subcollections: [{ collection: "photos" }]
       },
       {
-        name: fileName,
+        name: imageName,
         url: downloadURL
       }
     );
