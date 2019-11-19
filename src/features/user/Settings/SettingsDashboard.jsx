@@ -1,16 +1,18 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Grid } from 'semantic-ui-react';
-import SettingsNav from './SettingsNav';
-import { Route, Redirect, Switch } from 'react-router-dom';
-import BasicPage from './BasicPage';
-import AboutPage from './AboutPage';
-import PhotosPage from './PhotosPage';
-import AccountPage from './AccountPage';
-import { updatePassword } from '../../auth/authActions';
+import React from "react";
+import { connect } from "react-redux";
+import { Grid } from "semantic-ui-react";
+import SettingsNav from "./SettingsNav";
+import { Route, Redirect, Switch } from "react-router-dom";
+import BasicPage from "./BasicPage";
+import AboutPage from "./AboutPage";
+import PhotosPage from "./PhotosPage";
+import AccountPage from "./AccountPage";
+import { updatePassword } from "../../auth/authActions";
+import { updateProfile } from "../../user/userActions";
 
 const actions = {
-  updatePassword
+  updatePassword,
+  updateProfile
 };
 
 const mapState = state => ({
@@ -18,17 +20,27 @@ const mapState = state => ({
   user: state.firebase.profile
 });
 
-const SettingsDashboard = ({ updatePassword, providerId, user }) => {
+const SettingsDashboard = ({
+  updatePassword,
+  providerId,
+  user,
+  updateProfile
+}) => {
   return (
     <Grid>
       <Grid.Column width={12}>
         <Switch>
-          <Redirect exact from='/settings' to='/settings/basic' />
-          <Route path='/settings/basic' render={()=><BasicPage initialValues={user}/>}/>
-          <Route path='/settings/about' component={AboutPage} />
-          <Route path='/settings/photos' component={PhotosPage} />
+          <Redirect exact from="/settings" to="/settings/basic" />
           <Route
-            path='/settings/account'
+            path="/settings/basic"
+            render={() => (
+              <BasicPage initialValues={user} updateProfile={updateProfile} />
+            )}
+          />
+          <Route path="/settings/about" component={AboutPage} />
+          <Route path="/settings/photos" component={PhotosPage} />
+          <Route
+            path="/settings/account"
             render={() => (
               <AccountPage
                 updatePassword={updatePassword}
@@ -45,7 +57,4 @@ const SettingsDashboard = ({ updatePassword, providerId, user }) => {
   );
 };
 
-export default connect(
-  mapState,
-  actions
-)(SettingsDashboard);
+export default connect(mapState, actions)(SettingsDashboard);
