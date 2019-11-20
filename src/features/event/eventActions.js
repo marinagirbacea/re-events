@@ -1,5 +1,4 @@
 import {
-  CREATE_EVENT,
   UPDATE_EVENT,
   DELETE_EVENT,
   FETCH_EVENTS
@@ -12,7 +11,6 @@ import {
 import { fetchSampleData } from "../../app/data/mockApi";
 import { toastr } from "react-redux-toastr";
 import { createNewEvent } from "../../app/common/util/helpers";
-import { create } from "domain";
 
 export const createEvent = event => {
   return async (dispatch, getState, { getFirestore, getFirebase }) => {
