@@ -17,7 +17,6 @@ import SelectInput from "../../../app/common/form/SelectInput";
 import DateInput from "../../../app/common/form/DateInput";
 import PlaceInput from "../../../app/common/form/PlaceInput";
 import { withFirestore } from "react-redux-firebase";
-import { toastr } from "react-redux-toastr";
 
 const mapState = (state, ownProps) => {
   const eventId = ownProps.match.params.id;
@@ -78,6 +77,11 @@ class EventForm extends Component {
     const { firestore, match } = this.props;
      await firestore.setListener(`events/${match.params.id}`);
    
+  }
+
+  async componentWillUnmount(){
+    const { firestore, match } = this.props;
+     await firestore.unsetListener(`events/${match.params.id}`);
   }
 
   onFormSubmit = async values => {
