@@ -1,10 +1,3 @@
-import {FETCH_EVENTS } from "./eventConstants";
-import {
-  asyncActionStart,
-  asyncActionFinish,
-  asyncActionError
-} from "../async/asyncActions";
-import { fetchSampleData } from "../../app/data/mockApi";
 import { toastr } from "react-redux-toastr";
 import { createNewEvent } from "../../app/common/util/helpers";
 
@@ -51,8 +44,8 @@ export const cancelToggle = (cancelled, eventId) => async (
 ) => {
   const firestore = getFirestore();
   const message = cancelled
-    ? 'Are you sure you want to cancel the event?'
-    : 'This will reactivate the event, are you sure?';
+    ? "Are you sure you want to cancel the event?"
+    : "This will reactivate the event, are you sure?";
   try {
     toastr.confirm(message, {
       onOk: async () =>
@@ -63,19 +56,4 @@ export const cancelToggle = (cancelled, eventId) => async (
   } catch (error) {
     console.log(error);
   }
-};
-
-
-export const loadEvents = () => {
-  return async dispatch => {
-    try {
-      dispatch(asyncActionStart());
-      const events = await fetchSampleData();
-      dispatch({ type: FETCH_EVENTS, payload: { events } });
-      dispatch(asyncActionFinish());
-    } catch (error) {
-      console.log(error);
-      dispatch(asyncActionError());
-    }
-  };
 };
