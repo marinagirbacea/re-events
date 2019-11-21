@@ -10,7 +10,7 @@ import {
   hasLengthGreaterThan
 } from "revalidate";
 import { Segment, Form, Button, Grid, Header } from "semantic-ui-react";
-import { createEvent, updateEvent } from "../eventActions";
+import { createEvent, updateEvent,cancelToggle } from "../eventActions";
 import TextInput from "../../../app/common/form/TextInput";
 import TextArea from "../../../app/common/form/TextArea";
 import SelectInput from "../../../app/common/form/SelectInput";
@@ -34,13 +34,15 @@ const mapState = (state, ownProps) => {
   }
 
   return {
-    initialValues: event
+    initialValues: event,
+    event
   };
 };
 
 const actions = {
   createEvent,
-  updateEvent
+  updateEvent,
+  cancelToggle
 };
 
 const validate = combineValidators({
@@ -73,22 +75,18 @@ class EventForm extends Component {
   };
 
   async componentDidMount() {
-    const { firestore, match, history } = this.props;
-    let event = await firestore.get(`events/${match.params.id}`);
-    if (!event.exists) {
-      history.push("/events");
-      toastr.error("Sorry", "Event not found");
-    }else{
-      this.setState({
-        venueLatLng:event.data().venueLatLng
-      })
-    }
+    const { firestore, match } = this.props;
+     await firestore.setListener(`events/${match.params.id}`);
+   
   }
 
   onFormSubmit = async values => {
     values.venueLatLng = this.state.venueLatLng;
     try {
       if (this.props.initialValues.id) {
+        if(Object.keys(values.venueLatLng).length===0){
+          values.venueLatLng=this.props.event.venueLatLng;
+        }
         this.props.updateEvent(values);
         this.props.history.push(`/events/${this.props.initialValues.id}`);
       } else {
@@ -132,7 +130,9 @@ class EventForm extends Component {
       initialValues,
       invalid,
       submitting,
-      pristine
+      pristine,
+      event,
+      cancelToggle
     } = this.props;
     return (
       <Grid>
@@ -205,6 +205,12 @@ class EventForm extends Component {
               >
                 Cancel
               </Button>
+              <Button type='button' 
+              color={event.cancelled ? 'green' : 'red'}
+               floated='right' 
+               content={event.cancelled ? 'Reactivate event' : 'Cancel event'} 
+               onClick={()=>cancelToggle(!event.cancelled,event.id)}/>
+
             </Form>
           </Segment>
         </Grid.Column>

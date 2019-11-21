@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import EventList from '../EventList/EventList';
-import { createEvent, deleteEvent, updateEvent } from '../eventActions';
+import { createEvent, updateEvent } from '../eventActions';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import EventActivity from '../EventActivity/EventActivity';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -14,7 +14,6 @@ const mapState = state => ({
 
 const actions = {
   createEvent,
-  deleteEvent,
   updateEvent
 };
 
