@@ -16,14 +16,21 @@ import TextArea from "../../../app/common/form/TextArea";
 import SelectInput from "../../../app/common/form/SelectInput";
 import DateInput from "../../../app/common/form/DateInput";
 import PlaceInput from "../../../app/common/form/PlaceInput";
+import { withFirestore } from "react-redux-firebase";
+import { toastr } from "react-redux-toastr";
 
 const mapState = (state, ownProps) => {
   const eventId = ownProps.match.params.id;
 
   let event = {};
 
-  if (eventId && state.events.length > 0) {
-    event = state.events.filter(event => event.id === eventId)[0];
+  if (
+    state.firestore.ordered.events &&
+    state.firestore.ordered.events.length > 0
+  ) {
+    event =
+      state.firestore.ordered.events.filter(event => event.id === eventId)[0] ||
+      {};
   }
 
   return {
@@ -64,6 +71,19 @@ class EventForm extends Component {
     cityLatLng: {},
     venueLatLng: {}
   };
+
+  async componentDidMount() {
+    const { firestore, match, history } = this.props;
+    let event = await firestore.get(`events/${match.params.id}`);
+    if (!event.exists) {
+      history.push("/events");
+      toastr.error("Sorry", "Event not found");
+    }else{
+      this.setState({
+        venueLatLng:event.data().venueLatLng
+      })
+    }
+  }
 
   onFormSubmit = async values => {
     values.venueLatLng = this.state.venueLatLng;
@@ -193,7 +213,13 @@ class EventForm extends Component {
   }
 }
 
-export default connect(
-  mapState,
-  actions
-)(reduxForm({ form: "eventForm", validate })(EventForm));
+export default withFirestore(
+  connect(
+    mapState,
+    actions
+  )(
+    reduxForm({ form: "eventForm", validate, enableReinitialize: true })(
+      EventForm
+    )
+  )
+);
