@@ -1,12 +1,13 @@
-import { toastr } from 'react-redux-toastr';
-import { createNewEvent } from '../../app/common/util/helpers';
-import firebase from '../../app/config/firebase';
-import { FETCH_EVENTS } from './eventConstants';
+import { toastr } from "react-redux-toastr";
+import { createNewEvent } from "../../app/common/util/helpers";
+import firebase from "../../app/config/firebase";
+import { FETCH_EVENTS } from "./eventConstants";
 import {
   asyncActionStart,
   asyncActionFinish,
   asyncActionError
-} from '../async/asyncActions';
+} from "../async/asyncActions";
+import { async } from "@firebase/util";
 
 export const createEvent = event => {
   return async (dispatch, getState, { getFirestore, getFirebase }) => {
@@ -16,17 +17,17 @@ export const createEvent = event => {
     const photoURL = getState().firebase.profile.photoURL;
     const newEvent = createNewEvent(user, photoURL, event, firestore);
     try {
-      let createdEvent = await firestore.add('events', newEvent);
+      let createdEvent = await firestore.add("events", newEvent);
       await firestore.set(`event_attendee/${createdEvent.id}_${user.uid}`, {
         eventId: createdEvent.id,
         userUid: user.uid,
         eventDate: event.date,
         host: true
       });
-      toastr.success('Success!', 'Event has been created');
+      toastr.success("Success!", "Event has been created");
       return createdEvent;
     } catch (error) {
-      toastr.error('Oops', 'Something went wrong');
+      toastr.error("Oops", "Something went wrong");
     }
   };
 };
@@ -36,9 +37,9 @@ export const updateEvent = event => {
     const firestore = getFirestore();
     try {
       await firestore.update(`events/${event.id}`, event);
-      toastr.success('Success!', 'Event has been updated');
+      toastr.success("Success!", "Event has been updated");
     } catch (error) {
-      toastr.error('Oops', 'Something went wrong');
+      toastr.error("Oops", "Something went wrong");
     }
   };
 };
@@ -50,8 +51,8 @@ export const cancelToggle = (cancelled, eventId) => async (
 ) => {
   const firestore = getFirestore();
   const message = cancelled
-    ? 'Are you sure you want to cancel the event?'
-    : 'This will reactivate the event, are you sure?';
+    ? "Are you sure you want to cancel the event?"
+    : "This will reactivate the event, are you sure?";
   try {
     toastr.confirm(message, {
       onOk: async () =>
@@ -70,13 +71,13 @@ export const getEventsForDashboard = lastEvent => async (
 ) => {
   let today = new Date();
   const firestore = firebase.firestore();
-  const eventsRef = firestore.collection('events');
+  const eventsRef = firestore.collection("events");
   try {
     dispatch(asyncActionStart());
     let startAfter =
       lastEvent &&
       (await firestore
-        .collection('events')
+        .collection("events")
         .doc(lastEvent.id)
         .get());
     let query;
@@ -84,17 +85,17 @@ export const getEventsForDashboard = lastEvent => async (
     lastEvent
       ? (query = eventsRef
           // .where('date', '>=', today)
-          .orderBy('date')
+          .orderBy("date")
           .startAfter(startAfter)
           .limit(2))
       : (query = eventsRef
           // .where('date', '>=', today)
-          .orderBy('date')
+          .orderBy("date")
           .limit(2));
 
     let querySnap = await query.get();
 
-    if (querySnap.docs.length === 0){ 
+    if (querySnap.docs.length === 0) {
       dispatch(asyncActionFinish());
       return querySnap;
     }
@@ -111,5 +112,19 @@ export const getEventsForDashboard = lastEvent => async (
   } catch (error) {
     console.log(error);
     dispatch(asyncActionError());
+  }
+};
+
+export const addEventComment = (eventId, comment) => async (
+  dispatch,
+  getState,
+  { getFirebase }
+) => {
+  const firebase = getFirebase();
+  try {
+    await firebase.push(`event_chat/${eventId}`, comment);
+  } catch (error) {
+    console.log(error);
+    toastr.error("Oops", "Problem adding comment.");
   }
 };
