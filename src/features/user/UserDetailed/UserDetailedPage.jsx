@@ -10,6 +10,7 @@ import UserDetailedPhotos from "./UserDetailedPhotos";
 import UserDetailedSidebar from "./UserDetailedSidebar";
 import { userDetailedQuery } from "../userQueries";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { getUserEvents } from "../userActions";
 
 const mapState = (state, ownProps) => {
   let userUid = null;
@@ -32,13 +33,21 @@ const mapState = (state, ownProps) => {
     requesting: state.firestore.status.requesting
   };
 };
+const actions = {
+  getUserEvents
+};
 
 class UserDetailedPage extends Component {
+  async componentWillMount() {
+    let events = await this.props.getUserEvents(this.props.userUid);
+    console.log(events);
+  }
+
   render() {
     const { profile, photos, auth, match, requesting } = this.props;
     const isCurrentUser = auth.uid === match.params.id;
     const loading = Object.values(requesting).some(a => a === true);
-    if(loading) return <LoadingComponent/>
+    if (loading) return <LoadingComponent />;
 
     return (
       <Grid>
@@ -53,6 +62,6 @@ class UserDetailedPage extends Component {
 }
 
 export default compose(
-  connect(mapState),
+  connect(mapState, actions),
   firestoreConnect((auth, userUid) => userDetailedQuery(auth, userUid))
 )(UserDetailedPage);
