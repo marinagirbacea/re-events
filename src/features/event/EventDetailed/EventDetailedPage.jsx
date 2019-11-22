@@ -5,7 +5,7 @@ import EventDetailedHeader from "./EventDetailedHeader";
 import EventDetailedInfo from "./EventDetailedInfo";
 import EventDetailedChat from "./EventDetailedChat";
 import EventDetailedSidebar from "./EventDetailedSidebar";
-import { withFirestore, firebaseConnect } from "react-redux-firebase";
+import { withFirestore, firebaseConnect, isEmpty } from "react-redux-firebase";
 import { compose } from "redux";
 import { objectToArray } from "../../../app/common/util/helpers";
 import { goingToEvent, cancelGoingToEvent } from "../../user/userActions";
@@ -27,7 +27,10 @@ const mapState = (state, ownProps) => {
 
   return {
     event,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    eventChat:
+      !isEmpty(state.firebase.data.event_chat) &&
+      objectToArray(state.firebase.data.event_chat[ownProps.match.params.id])
   };
 };
 
@@ -54,7 +57,8 @@ class EventDetailedPage extends Component {
       auth,
       goingToEvent,
       cancelGoingToEvent,
-      addEventComment
+      addEventComment,
+      eventChat
     } = this.props;
     const attendees =
       event && event.attendees && objectToArray(event.attendees);
@@ -72,6 +76,7 @@ class EventDetailedPage extends Component {
           />
           <EventDetailedInfo event={event} />
           <EventDetailedChat
+          eventChat={eventChat}
             addEventComment={addEventComment}
             eventId={event.id}
           />
