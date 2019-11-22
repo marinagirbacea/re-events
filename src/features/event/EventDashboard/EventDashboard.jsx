@@ -55,6 +55,7 @@ class EventDashboard extends Component {
       });
     }
   };
+
   render() {
     const { loading } = this.props;
     const { moreEvents, loadedEvents } = this.state;

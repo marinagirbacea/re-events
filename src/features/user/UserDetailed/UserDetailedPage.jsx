@@ -35,12 +35,13 @@ const mapState = (state, ownProps) => {
     requesting: state.firestore.status.requesting
   };
 };
+
 const actions = {
   getUserEvents
 };
 
 class UserDetailedPage extends Component {
-  async componentWillMount() {
+  async componentDidMount() {
     let events = await this.props.getUserEvents(this.props.userUid);
     console.log(events);
   }
@@ -62,11 +63,10 @@ class UserDetailedPage extends Component {
     const isCurrentUser = auth.uid === match.params.id;
     const loading = Object.values(requesting).some(a => a === true);
     if (loading) return <LoadingComponent />;
-
     return (
       <Grid>
         <UserDetailedHeader profile={profile} />
-        <UserDetailedDescription profile={profile} />x
+        <UserDetailedDescription profile={profile} />
         <UserDetailedSidebar isCurrentUser={isCurrentUser} />
         {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
         <UserDetailedEvents
