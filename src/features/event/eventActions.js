@@ -84,12 +84,12 @@ export const getEventsForDashboard = lastEvent => async (
 
     lastEvent
       ? (query = eventsRef
-          .where("date", ">=", today)
+         // .where("date", ">=", today)
           .oraderBy("date")
           .startAfter(startAfter)
           .limit(2))
       : (query = eventsRef
-          .where("date", ">=", today)
+         // .where("date", ">=", today)
           .oraderBy("date")
           .limit(2));
 
@@ -97,7 +97,7 @@ export const getEventsForDashboard = lastEvent => async (
 
     if (querySnap.docs.length === 0) {
       dispatch(asyncActionFinish());
-      return;
+      return querySnap;
     }
 
     let events = [];
@@ -108,7 +108,7 @@ export const getEventsForDashboard = lastEvent => async (
     }
     dispatch({ type: FETCH_EVENTS, payload: { events } });
     dispatch(asyncActionFinish());
-    return querySnap;
+    return querySnap; 
   } catch (error) {
     console.log(error);
     dispatch(asyncActionError());
