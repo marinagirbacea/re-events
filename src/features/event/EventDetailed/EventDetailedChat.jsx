@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { Segment, Header, Comment } from "semantic-ui-react";
-import { Link } from "react-router-dom";
-import { formatDistance } from "date-fns";
-import EventDetailedChatForm from "./EventDetailedChatForm";
+import React, { Component } from 'react';
+import { Segment, Header, Comment } from 'semantic-ui-react';
+import EventDetailedChatForm from './EventDetailedChatForm';
+import { formatDistance } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 class EventDetailedChat extends Component {
   state = {
@@ -30,11 +30,11 @@ class EventDetailedChat extends Component {
     return (
       <div>
         <Segment
-          textAlign="center"
-          attached="top"
+          textAlign='center'
+          attached='top'
           inverted
-          color="teal"
-          style={{ border: "none" }}
+          color='teal'
+          style={{ border: 'none' }}
         >
           <Header>Chat about this event</Header>
         </Segment>
@@ -45,7 +45,7 @@ class EventDetailedChat extends Component {
               eventChat.map(comment => (
                 <Comment key={comment.id}>
                   <Comment.Avatar
-                    src={comment.photoURL || "/assets/user.png"}
+                    src={comment.photoURL || '/assets/user.png'}
                   />
                   <Comment.Content>
                     <Comment.Author as={Link} to={`/profile/${comment.uid}`}>
@@ -72,12 +72,13 @@ class EventDetailedChat extends Component {
                       )}
                     </Comment.Actions>
                   </Comment.Content>
+
                   {comment.childNodes &&
                     comment.childNodes.map(child => (
                       <Comment.Group>
                         <Comment key={child.id}>
                           <Comment.Avatar
-                            src={child.photoURL || "/assets/user.png"}
+                            src={child.photoURL || '/assets/user.png'}
                           />
                           <Comment.Content>
                             <Comment.Author
@@ -94,7 +95,7 @@ class EventDetailedChat extends Component {
                             <Comment.Text>{child.text}</Comment.Text>
                             <Comment.Actions>
                               <Comment.Action
-                                onClick={this.handleOpenReplyForm(comment.id)}
+                                onClick={this.handleOpenReplyForm(child.id)}
                               >
                                 Reply
                               </Comment.Action>
@@ -117,10 +118,10 @@ class EventDetailedChat extends Component {
               ))}
           </Comment.Group>
           <EventDetailedChatForm
-            parentId={0}
             addEventComment={addEventComment}
             eventId={eventId}
-            form={"newComment"}
+            form={'newComment'}
+            parentId={0}
           />
         </Segment>
       </div>
