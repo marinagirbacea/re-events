@@ -1,44 +1,45 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 const newActivity = (type, event, id) => {
   return {
     type: type,
-    eventDate: newEvent.date,
-    hostedBy: newEvent.hostedBy,
-    title: newEvent.title,
-    photoURL: newEvent.hostPhotoURL,
+    eventDate: event.date,
+    hostedBy: event.hostedBy,
+    title: event.title,
+    photoURL: event.hostPhotoURL,
     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    hostUid: newEvent.hostedBy,
-    eventId: event.id
+    hostUid: event.hostUid,
+    eventId: id
   };
 };
 
 exports.createActivity = functions.firestore
-  .document("events/{eventId}")
+  .document('events/{eventId}')
   .onCreate(event => {
     let newEvent = event.data();
 
     console.log(newEvent);
 
-    const activity = newActivity("newEvent", newEvent, event.id);
+    const activity = newActivity('newEvent', newEvent, event.id);
+
     console.log(activity);
 
     return admin
       .firestore()
-      .collection("activity")
+      .collection('activity')
       .add(activity)
       .then(docRef => {
-        return console.log("Activity created with ID:", docRef.id);
+        return console.log('Activity created with ID ', docRef.id);
       })
       .catch(err => {
-        return console.log("Error adding activity", err);
+        return console.log('Error adding activity', err);
       });
   });
 
 exports.cancelActivity = functions.firestore
-  .document("events/{eventId}")
+  .document('events/{eventId}')
   .onUpdate((event, context) => {
     let updatedEvent = event.after.data();
     let previousEventData = event.before.data();
@@ -54,7 +55,7 @@ exports.cancelActivity = functions.firestore
       return false;
 
     const activity = newActivity(
-      "cancelledEvent",
+      'cancelledEvent',
       updatedEvent,
       context.params.eventId
     );
@@ -63,12 +64,12 @@ exports.cancelActivity = functions.firestore
 
     return admin
       .firestore()
-      .collection("activity")
+      .collection('activity')
       .add(activity)
       .then(docRef => {
-        return console.log("Activity created with ID:", docRef.id);
+        return console.log('Activity created with ID ', docRef.id);
       })
       .catch(err => {
-        return console.log("Error adding activity", err);
+        return console.log('Error adding activity', err);
       });
   });

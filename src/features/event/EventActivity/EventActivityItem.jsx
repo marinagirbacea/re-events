@@ -30,7 +30,7 @@ class EventActivityItem extends Component {
               as={Link}
               to={{ pathname: '/profile/' + activity.hostUid }}
             >
-              {activity.hostedByDisplayName}
+              {activity.hostedBy}
             </Feed.User>{' '}
             has cancelled{' '}
             <Link to={{ pathname: '/event/' + activity.eventId }}>
