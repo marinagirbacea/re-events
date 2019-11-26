@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Grid, Button, Loader } from "semantic-ui-react";
+import React, { Component, createRef } from "react";
+import { Grid, Loader } from "semantic-ui-react";
 import { connect } from "react-redux";
 import EventList from "../EventList/EventList";
 import { getEventsForDashboard } from "../eventActions";
@@ -26,6 +26,8 @@ const actions = {
 };
 
 class EventDashboard extends Component {
+  contextRef = createRef();
+
   state = {
     moreEvents: false,
     loadingInitial: true,
@@ -34,7 +36,6 @@ class EventDashboard extends Component {
 
   async componentDidMount() {
     let next = await this.props.getEventsForDashboard();
-    console.log(next);
 
     if (next && next.docs && next.docs.length > 1) {
       this.setState({
@@ -55,9 +56,7 @@ class EventDashboard extends Component {
   getNextEvents = async () => {
     const { events } = this.props;
     let lastEvent = events && events[events.length - 1];
-    console.log(lastEvent);
     let next = await this.props.getEventsForDashboard(lastEvent);
-    console.log(next);
     if (next && next.docs && next.docs.length <= 1) {
       this.setState({
         moreEvents: false
@@ -72,15 +71,17 @@ class EventDashboard extends Component {
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList
-            loading={loading}
-            events={loadedEvents}
-            moreEvents={moreEvents}
-            getNextEvents={this.getNextEvents}
-          />
+          <div ref={this.contextRef}>
+            <EventList
+              loading={loading}
+              events={loadedEvents}
+              moreEvents={moreEvents}
+              getNextEvents={this.getNextEvents}
+            />
+          </div>
         </Grid.Column>
         <Grid.Column width={6}>
-          <EventActivity activities={activities} />
+          <EventActivity activities={activities} contextRef={this.contextRef} />
         </Grid.Column>
         <Grid.Column width={10}>
           <Loader active={loading} />
