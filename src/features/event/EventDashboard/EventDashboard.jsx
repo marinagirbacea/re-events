@@ -1,16 +1,16 @@
-import React, { Component, createRef } from 'react';
-import { Grid, Loader } from 'semantic-ui-react';
-import { connect } from 'react-redux';
-import EventList from '../EventList/EventList';
-import { getEventsForDashboard } from '../eventActions';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
-import EventActivity from '../EventActivity/EventActivity';
-import { firestoreConnect } from 'react-redux-firebase';
+import React, { Component, createRef } from "react";
+import { Grid, Loader } from "semantic-ui-react";
+import { connect } from "react-redux";
+import EventList from "../EventList/EventList";
+import { getEventsForDashboard } from "../eventActions";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import EventActivity from "../EventActivity/EventActivity";
+import { firestoreConnect } from "react-redux-firebase";
 
 const query = [
   {
-    collection: 'activity',
-    orderBy: ['timestamp', 'desc'],
+    collection: "activity",
+    orderBy: ["timestamp", "desc"],
     limit: 5
   }
 ];
