@@ -6,7 +6,7 @@ import {
 } from "../async/asyncActions";
 import cuid from "cuid";
 import firebase from "../../app/config/firebase";
-import { FETCH_EVENTS } from "../event/eventConstants";
+import { FETCH_USER_EVENTS } from "../event/eventConstants";
 
 export const updateProfile = user => async (
   dispatch,
@@ -132,7 +132,6 @@ export const setMainPhoto = photo => async (
         });
       }
     }
-    console.log(batch);
     await batch.commit();
     dispatch(asyncActionFinish());
   } catch (error) {
@@ -164,18 +163,18 @@ export const goingToEvent = event => async (
       .collection("event_attendee")
       .doc(`${event.id}_${user.uid}`);
 
-await firestore.runTransaction(async(transaction)=>{
-  await transaction.get(eventDocRef);
-  await transaction.update(eventDocRef,{
-    [`attendees.${user.uid}`]: attendee
-  })
-  await transaction.set(eventAttendeeDocRef,{
-    eventId: event.id,
-    userUid: user.uid,
-    eventDate: event.date,
-    host: false
-  })
-})
+    await firestore.runTransaction(async transaction => {
+      await transaction.get(eventDocRef);
+      await transaction.update(eventDocRef, {
+        [`attendees.${user.uid}`]: attendee
+      });
+      await transaction.set(eventAttendeeDocRef, {
+        eventId: event.id,
+        userUid: user.uid,
+        eventDate: event.date,
+        host: false
+      });
+    });
 
     dispatch(asyncActionFinish());
     toastr.success("Success", "You have signed up to the event");
@@ -253,7 +252,7 @@ export const getUserEvents = (userUid, activeTab) => async (
       events.push({ ...evt.data(), id: evt.id });
     }
 
-    dispatch({ type: FETCH_EVENTS, payload: { events } });
+    dispatch({ type: FETCH_USER_EVENTS, payload: { events } });
 
     dispatch(asyncActionFinish());
   } catch (error) {

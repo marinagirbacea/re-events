@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import { Segment, Image, Item, Header, Button, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { openModal } from "../../modals/modalActions";
 
 const eventImageStyle = {
   filter: "brightness(30%)"
