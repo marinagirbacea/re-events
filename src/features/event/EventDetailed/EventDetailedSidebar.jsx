@@ -22,7 +22,7 @@ const EventDetailedSidebar = ({ attendees }) => {
           {attendees &&
             attendees.map(attendee => (
               <Item key={attendee.id} style={{ position: "relative" }}>
-                {isHost && (
+                {attendee.host && (
                   <Label
                     style={{ position: "absolute" }}
                     color="orange"
